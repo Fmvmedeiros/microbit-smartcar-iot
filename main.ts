@@ -39,8 +39,10 @@ bluetooth.onUartDataReceived(serial.delimiters(Delimiters.Hash), function () {
         Troca_Luz(Luz_esta_ligada)
     } else if (cmd == "vento") {
         Troca_Ventoinha(Ventoinha_esta_ligada)
-    } else if (cmd == "auto") {
-        Troca_Auto()
+    } else if (cmd == "autoon") {
+        Auto_Ligado = true
+    } else if (cmd == "autooff") {
+        Auto_Ligado = false
     } else {
         basic.showString(cmd)
     }
@@ -76,13 +78,6 @@ function Troca_Ventoinha (Ventoinha_Ligada: boolean) {
 function Signal () {
     basic.showIcon(IconNames.SmallSquare, 30)
 basic.showIcon(IconNames.Square, 30)
-}
-function Troca_Auto () {
-    if (Auto_Ligado) {
-        Auto_Ligado = false
-    } else {
-        Auto_Ligado = true
-    }
 }
 function OnLed () {
     basic.showLeds(`
