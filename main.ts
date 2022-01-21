@@ -43,6 +43,10 @@ bluetooth.onUartDataReceived(serial.delimiters(Delimiters.Hash), function () {
         Auto_Ligado = true
     } else if (cmd == "autooff") {
         Auto_Ligado = false
+    } else if (cmd.includes("setluz")) {
+        Lmiar_Luz = parseFloat(cmd.substr(7, 4))
+    } else if (cmd.includes("settemp")) {
+        Limiar_Temperatura = parseFloat(cmd.substr(8, 2))
     } else {
         basic.showString(cmd)
     }
@@ -50,7 +54,7 @@ bluetooth.onUartDataReceived(serial.delimiters(Delimiters.Hash), function () {
     OnLed()
 })
 input.onButtonPressed(Button.B, function () {
-    basic.showString("Luz:" + Lmiar_Luz + "LuzMax" + Lmiar_Luz)
+    basic.showString("Luz:" + Luz + "LuzMax" + Lmiar_Luz)
     if (BT_Ligado) {
         OnLed()
     } else {
