@@ -1,52 +1,29 @@
-function Luz_Automatica () {
-    if (Luz < Lmiar_Luz) {
-        Troca_Luz(false)
-    } else {
-        Troca_Luz(true)
-    }
-}
 bluetooth.onBluetoothConnected(function () {
     bluetooth.startUartService()
-    Ligado = true
-    basic.showIcon(IconNames.Happy)
+    BT_Ligado = true
+    OnLed()
 })
 bluetooth.onBluetoothDisconnected(function () {
-    Ligado = false
+    BT_Ligado = false
     basic.showIcon(IconNames.Asleep)
 })
 input.onButtonPressed(Button.A, function () {
     basic.showString("Temp:" + Temperatura + "TempMax:" + Limiar_Temperatura)
+    if (BT_Ligado) {
+        OnLed()
+    } else {
+        basic.showIcon(IconNames.Asleep)
+    }
 })
 function Ventoinha_Automatica () {
-    if (Temperatura > Limiar_Temperatura) {
-        Troca_Ventoinha(false)
-    } else {
-        Troca_Ventoinha(true)
+    if (Auto_Ligado) {
+        if (Temperatura > Limiar_Temperatura) {
+            Troca_Ventoinha(false)
+        } else {
+            Troca_Ventoinha(true)
+        }
     }
 }
-bluetooth.onUartDataReceived(serial.delimiters(Delimiters.Hash), function () {
-    cmd = bluetooth.uartReadUntil(serial.delimiters(Delimiters.Hash))
-    if (cmd == "luz") {
-        Troca_Luz(Luz_esta_ligada)
-    } else if (cmd == "vento") {
-        Troca_Ventoinha(Ventoinha_esta_ligada)
-    } else {
-        basic.showIcon(IconNames.No)
-    }
-    game.addScore(1)
-})
-function Troca_Ventoinha (Ventoinha_Ligada: boolean) {
-    if (Ventoinha_Ligada) {
-        pins.digitalWritePin(DigitalPin.P2, 0)
-        Ventoinha_esta_ligada = false
-    } else {
-        pins.digitalWritePin(DigitalPin.P2, 1)
-        Ventoinha_esta_ligada = true
-    }
-}
-input.onButtonPressed(Button.B, function () {
-    basic.showString("Luz:" + Lmiar_Luz + "LuzMax" + Lmiar_Luz)
-})
 function Troca_Luz (Luz_Ligada: boolean) {
     if (Luz_Ligada) {
         pins.digitalWritePin(DigitalPin.P0, 0)
@@ -56,17 +33,79 @@ function Troca_Luz (Luz_Ligada: boolean) {
         Luz_esta_ligada = true
     }
 }
+bluetooth.onUartDataReceived(serial.delimiters(Delimiters.Hash), function () {
+    cmd = bluetooth.uartReadUntil(serial.delimiters(Delimiters.Hash))
+    if (cmd == "luz") {
+        Troca_Luz(Luz_esta_ligada)
+    } else if (cmd == "vento") {
+        Troca_Ventoinha(Ventoinha_esta_ligada)
+    } else if (cmd == "auto") {
+        Troca_Auto()
+    } else {
+        basic.showString(cmd)
+    }
+    Signal()
+    OnLed()
+})
+input.onButtonPressed(Button.B, function () {
+    basic.showString("Luz:" + Lmiar_Luz + "LuzMax" + Lmiar_Luz)
+    if (BT_Ligado) {
+        OnLed()
+    } else {
+        basic.showIcon(IconNames.Asleep)
+    }
+})
+function Luz_Automatica () {
+    if (Auto_Ligado) {
+        if (Luz < Lmiar_Luz) {
+            Troca_Luz(false)
+        } else {
+            Troca_Luz(true)
+        }
+    }
+}
+function Troca_Ventoinha (Ventoinha_Ligada: boolean) {
+    if (Ventoinha_Ligada) {
+        pins.digitalWritePin(DigitalPin.P2, 0)
+        Ventoinha_esta_ligada = false
+    } else {
+        pins.digitalWritePin(DigitalPin.P2, 1)
+        Ventoinha_esta_ligada = true
+    }
+}
+function Signal () {
+    basic.showIcon(IconNames.SmallSquare, 30)
+basic.showIcon(IconNames.Square, 30)
+}
+function Troca_Auto () {
+    if (Auto_Ligado) {
+        Auto_Ligado = false
+    } else {
+        Auto_Ligado = true
+    }
+}
+function OnLed () {
+    basic.showLeds(`
+        . . . . .
+        . . . . .
+        . . # . .
+        . . . . .
+        . . . . .
+        ` ,5)
+}
+let Luz = 0
 let cmd = ""
 let Temperatura = 0
-let Luz = 0
 let Lmiar_Luz = 0
 let Limiar_Temperatura = 0
+let Auto_Ligado = false
 let Ventoinha_esta_ligada = false
 let Luz_esta_ligada = false
-let Ligado = false
-Ligado = false
+let BT_Ligado = false
+BT_Ligado = false
 Luz_esta_ligada = false
 Ventoinha_esta_ligada = false
+Auto_Ligado = true
 Limiar_Temperatura = 23
 Lmiar_Luz = 800
 basic.showIcon(IconNames.Asleep)
@@ -76,7 +115,7 @@ basic.forever(function () {
     Luz = pins.analogReadPin(AnalogPin.P1)
     Luz_Automatica()
     Ventoinha_Automatica()
-    if (Ligado) {
+    if (BT_Ligado) {
         bluetooth.uartWriteString("Luz:" + convertToText(Luz) + "::  ::" + "Temp:" + convertToText(Temperatura))
     }
     basic.pause(100)
