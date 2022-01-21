@@ -14,6 +14,9 @@ bluetooth.onBluetoothDisconnected(function () {
     Ligado = false
     basic.showIcon(IconNames.Asleep)
 })
+input.onButtonPressed(Button.A, function () {
+    basic.showString("Temp:" + Temperatura + "TempMax:" + Limiar_Temperatura)
+})
 function Ventoinha_Automatica () {
     if (Temperatura > Limiar_Temperatura) {
         Troca_Ventoinha(false)
@@ -41,6 +44,9 @@ function Troca_Ventoinha (Ventoinha_Ligada: boolean) {
         Ventoinha_esta_ligada = true
     }
 }
+input.onButtonPressed(Button.B, function () {
+    basic.showString("Luz:" + Lmiar_Luz + "LuzMax" + Lmiar_Luz)
+})
 function Troca_Luz (Luz_Ligada: boolean) {
     if (Luz_Ligada) {
         pins.digitalWritePin(DigitalPin.P0, 0)
