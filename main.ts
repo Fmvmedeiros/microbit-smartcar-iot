@@ -116,6 +116,8 @@ basic.forever(function () {
     Ventoinha_Automatica()
     if (BT_Ligado) {
         bluetooth.uartWriteString("Luz:" + convertToText(Luz) + "::  ::" + "Temp:" + convertToText(Temperatura))
+        bluetooth.uartWriteString("luzlim" + convertToText(Lmiar_Luz))
+        bluetooth.uartWriteString("templim" + convertToText(Limiar_Temperatura))
+        basic.pause(100)
     }
-    basic.pause(100)
 })
