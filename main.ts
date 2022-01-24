@@ -46,7 +46,7 @@ bluetooth.onUartDataReceived(serial.delimiters(Delimiters.Hash), function () {
     } else if (cmd.includes("setluz")) {
         Lmiar_Luz = parseFloat(cmd.substr(7, 4))
     } else if (cmd.includes("settemp")) {
-        Limiar_Temperatura = parseFloat(cmd.substr(8, 2))
+        Limiar_Temperatura = parseFloat(cmd.substr(8, 4))
     } else {
         basic.showString(cmd)
     }
